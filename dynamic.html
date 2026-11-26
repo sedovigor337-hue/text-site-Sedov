@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Паспорт рабочего места (Динамическая версия)</title>
+</head>
+<body>
+    <header>
+        <h1>Паспорт рабочего места</h1>
+    </header>
+
+    <main>
+        <section>
+            <h2>Параметры системы</h2>
+            <table id="params-table" border="1" cellpadding="6" cellspacing="0">
+                <thead>
+                    <tr>
+                        <th>Параметр</th>
+                        <th>Значение</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>Периферийные устройства</h2>
+            <ul id="devices-list"></ul>
+        </section>
+
+        <section>
+            <h2>Программное обеспечение</h2>
+            <table id="software-table" border="1" cellpadding="6" cellspacing="0">
+                <thead>
+                    <tr>
+                        <th>№</th>
+                        <th>Название программы</th>
+                        <th>Вид ПО</th>
+                        <th>Назначение</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </section>
+    </main>
+
+    <footer>
+        <p>Практическая работа №1. Паспорт рабочего места (JSON + Fetch).</p>
+    </footer>
+
+    <script>
+        fetch('data/workstation.json')
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Ошибка загрузки файла: ' + response.status);
+                }
+                return response.json();
+            })
+            .then(data => {
+                // 1. Заполнение таблицы параметров
+                const paramsBody = document.querySelector('#params-table tbody');
+                data.params.forEach(item => {
+                    const row = paramsBody.insertRow();
+                    row.insertCell().textContent = item.name;
+                    row.insertCell().textContent = item.value;
+                });
+
+                // 2. Заполнение списка устройств
+                const devicesList = document.getElementById('devices-list');
+                data.devices.forEach(device => {
+                    const li = document.createElement('li');
+                    li.innerHTML = `<strong>${device.name}</strong> — ${device.group}`;
+                    devicesList.appendChild(li);
+                });
+
+                // 3. Заполнение таблицы ПО
+                const softwareBody = document.querySelector('#software-table tbody');
+                data.software.forEach(soft => {
+                    const row = softwareBody.insertRow();
+                    row.insertCell().textContent = soft.num;
+                    row.insertCell().textContent = soft.name;
+                    row.insertCell().textContent = soft.type;
+                    row.insertCell().textContent = soft.purpose;
+                });
+            })
+            .catch(error => console.error('Ошибка:', error));
+    </script>
+</body>
+</html>
